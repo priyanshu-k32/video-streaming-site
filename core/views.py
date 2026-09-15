@@ -1,21 +1,42 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Video
+from .models import Course, Video
 
 
 @login_required
 def dashboard(request):
-	videos = Video.objects.filter(is_published=True)
-	return render(request, 'core/dashboard.html', {'videos': videos})
+	courses = Course.objects.filter(is_published=True).prefetch_related('videos')
+	uncategorized_videos = Video.objects.filter(course__isnull=True, is_published=True)
+	return render(request, 'core/dashboard.html', {
+		'courses': courses,
+		'uncategorized_videos': uncategorized_videos,
+	})
+
+
+@login_required
+def course_detail(request, pk):
+	course = get_object_or_404(
+		Course.objects.prefetch_related('videos'),
+		pk=pk,
+		is_published=True,
+	)
+	videos = course.videos.filter(is_published=True)
+	return render(request, 'core/course_detail.html', {'course': course, 'videos': videos})
 
 
 @login_required
 def video_detail(request, pk):
-	video = get_object_or_404(Video, pk=pk, is_published=True)
+	video = get_object_or_404(
+		Video,
+		Q(course__isnull=True) | Q(course__is_published=True),
+		pk=pk,
+		is_published=True,
+	)
 	return render(request, 'core/video_detail.html', {'video': video})
 
 

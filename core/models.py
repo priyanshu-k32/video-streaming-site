@@ -5,7 +5,22 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 
+class Course(models.Model):
+	title = models.CharField(max_length=200)
+	description = models.TextField(blank=True)
+	is_published = models.BooleanField(default=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	order = models.PositiveIntegerField(default=0)
+
+	class Meta:
+		ordering = ['order', '-created_at']
+
+	def __str__(self):
+		return self.title
+
+
 class Video(models.Model):
+	course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos', null=True, blank=True)
 	title = models.CharField(max_length=200)
 	description = models.TextField(blank=True)
 	youtube_url = models.URLField('YouTube URL')

@@ -22,8 +22,16 @@
         .number { display: block; margin-bottom: 28px; color: var(--accent); font: 700 34px Georgia, serif; }
         h2 { margin: 0 0 8px; font: 400 24px Georgia, serif; }
         .panel p { margin: 0; color: var(--muted); line-height: 1.5; }
-        .videos { margin-top: 70px; }
-        .videos h2 { margin-bottom: 22px; font-size: 34px; }
+        .courses { margin-top: 70px; }
+        .courses h2 { margin-bottom: 22px; font-size: 34px; }
+        .course-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .course-card { padding: 28px; border: 1px solid var(--line); background: #fff; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(16, 42, 67, .12); }
+        .course-card h3 { margin: 0 0 10px; color: var(--ink); font: 400 28px Georgia, serif; }
+        .course-card p { margin: 0 0 18px; color: var(--muted); line-height: 1.5; }
+        .course-meta { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+        .uncategorized { margin-top: 48px; }
+        .uncategorized h2 { margin-bottom: 22px; font-size: 28px; }
         .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         .video-card { overflow: hidden; border: 1px solid var(--line); background: #fff; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
         .video-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(16, 42, 67, .12); }
@@ -32,7 +40,7 @@
         .video-copy h3 { margin: 0 0 8px; color: var(--ink); font: 400 22px Georgia, serif; }
         .video-copy p { display: -webkit-box; overflow: hidden; margin: 0; color: var(--muted); line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
         .empty { padding: 30px; border: 1px dashed var(--line); color: var(--muted); }
-        @media (max-width: 700px) { header { padding: 20px; } .user span { display: none; } main { padding: 48px 0; } .grid, .video-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 700px) { header { padding: 20px; } .user span { display: none; } main { padding: 48px 0; } .grid, .course-grid, .video-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -49,21 +57,35 @@
             <article class="panel"><span class="number">02</span><h2>Activity</h2><p>Recent workspace activity will appear here.</p></article>
             <article class="panel"><span class="number">03</span><h2>Settings</h2><p>Manage your account and preferences.</p></article>
         </section>
-        <section class="videos" aria-labelledby="videos-heading">
-            <h2 id="videos-heading">Latest videos</h2>
-            {% if videos %}
-                <div class="video-grid">
-                    {% for video in videos %}
-                        <a class="video-card" href="{% url 'video_detail' video.pk %}">
-                            <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/hqdefault.jpg" alt="">
-                            <div class="video-copy"><h3>{{ video.title }}</h3><p>{{ video.description|default:'Watch this video in the Ocean workspace.' }}</p></div>
+        <section class="courses" aria-labelledby="courses-heading">
+            <h2 id="courses-heading">Courses</h2>
+            {% if courses %}
+                <div class="course-grid">
+                    {% for course in courses %}
+                        <a class="course-card" href="{% url 'course_detail' course.pk %}">
+                            <h3>{{ course.title }}</h3>
+                            <p>{{ course.description|default:'Explore the videos in this course.' }}</p>
+                            <div class="course-meta">{{ course.videos.all|length }} video{{ course.videos.all|length|pluralize }}</div>
                         </a>
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="empty">Videos added by an administrator will appear here.</div>
+                <div class="empty">Courses added by an administrator will appear here.</div>
             {% endif %}
         </section>
+        {% if uncategorized_videos %}
+        <section class="uncategorized" aria-labelledby="uncategorized-heading">
+            <h2 id="uncategorized-heading">Other videos</h2>
+            <div class="video-grid">
+                {% for video in uncategorized_videos %}
+                    <a class="video-card" href="{% url 'video_detail' video.pk %}">
+                        <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/hqdefault.jpg" alt="">
+                        <div class="video-copy"><h3>{{ video.title }}</h3><p>{{ video.description|default:'Watch this video in the Ocean workspace.' }}</p></div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
     </main>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ video.title }} | Ocean</title>
+    <style>
+        :root { --ink: #102a43; --muted: #627d98; --line: #d9e2ec; --accent: #ef8354; --paper: #f7f9fb; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: var(--ink); background: var(--paper); font-family: Arial, sans-serif; }
+        header { display: flex; align-items: center; justify-content: space-between; padding: 24px 5vw; border-bottom: 1px solid var(--line); background: #fff; }
+        .brand { color: var(--accent); font: 700 13px Arial, sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+        .back { color: var(--ink); font-size: 14px; font-weight: 700; text-decoration: none; }
+        main { width: min(1000px, 90vw); margin: 0 auto; padding: 60px 0 80px; }
+        .player { overflow: hidden; background: #000; box-shadow: 0 20px 50px rgba(16, 42, 67, .16); }
+        iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+        .eyebrow { margin-top: 38px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 12px 0; font: 400 clamp(36px, 6vw, 64px)/1 Georgia, 'Times New Roman', serif; }
+        .description { max-width: 700px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+        .fallback { color: var(--accent); font-size: 14px; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <header><div class="brand">Ocean workspace</div><a class="back" href="{% url 'dashboard' %}">Back to dashboard</a></header>
+    <main>
+        <div class="player"><iframe src="{{ video.youtube_embed_url }}" title="{{ video.title }}" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="eyebrow">Now watching</div>
+        <h1>{{ video.title }}</h1>
+        {% if video.description %}<p class="description">{{ video.description }}</p>{% endif %}
+        <p><a class="fallback" href="{{ video.youtube_url }}" target="_blank" rel="noopener">Open on YouTube</a></p>
+    </main>
+</body>
+</html>
